@@ -758,7 +758,7 @@ function Topbar({ page, setPage, crumbs, right, onCommandPalette, theme, setThem
                 <Icon name="refresh" size={14} />계정 변경
                 <span style={{ marginLeft: "auto", fontSize: 10, color: "var(--text-faint)" }}>2</span>
               </div>
-              <div className="popover-item is-danger" onClick={() => { setUserOpen(false); if (window.confirm("로그아웃 하시겠어요?")) window.Planary.toast?.({ type: "info", title: "곧 로그아웃됩니다…" }); }}>
+              <div className="popover-item is-danger" onClick={() => { setUserOpen(false); if (window.confirm("로그아웃 하시겠어요?")) window.dispatchEvent(new CustomEvent("planary:sign-out")); }}>
                 <Icon name="logout" size={14} />로그아웃
               </div>
               </div>

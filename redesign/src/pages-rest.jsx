@@ -5,10 +5,10 @@ const { useState: useStateO, useRef: useRefO, useEffect: useEffectO, useMemo: us
 /* ===========================================================
    PROJECTS
    =========================================================== */
-function ProjectsPage({ tasks, setTasks, setPage, setTaskFilter }) {
+function ProjectsPage({ tasks, setPage, setTaskFilter }) {
   const { PROJECTS, ECLASS_COURSES } = window.Planary;
   const [projects, setProjects] = useStateO(PROJECTS);
-  const [selected, setSelected] = useStateO(PROJECTS[0].id);
+  const [selected, setSelected] = useStateO(PROJECTS.length ? PROJECTS[0].id : null);
   const [syncing, setSyncing] = useStateO(false);
   const [createOpen, setCreateOpen] = useStateO(false);
 
@@ -28,7 +28,7 @@ function ProjectsPage({ tasks, setTasks, setPage, setTaskFilter }) {
   const open = projTasks.filter((t) => !t.done);
   const done = projTasks.filter((t) => t.done);
 
-  const toggleTask = (id) => setTasks((prev) => prev.map((t) => t.id === id ? { ...t, done: !t.done, completedAt: !t.done ? new Date().toISOString() : null } : t));
+  const toggleTask = (id) => window.dispatchEvent(new CustomEvent("planary:toggle-task", { detail: id }));
 
   const handleCreate = (draft) => {
     const id = `p${Date.now()}${Math.random().toString(36).slice(2, 6)}`;
@@ -2504,14 +2504,17 @@ const ARCHIVE_QUOTES = [
   { text: "지금 한 작업은 미래의 자유 시간입니다.", date: "2024. 09. 22 메모에서" },
 ];
 
-function archiveTaskActivityDateKey(task) {
-  const value = task.completedAt || task.dueDate || task.due;
+function toDateKey(value) {
   if (!value) return null;
   if (typeof value.toDate === "function") return value.toDate().toISOString().slice(0, 10);
   if (typeof value.seconds === "number") return new Date(value.seconds * 1000).toISOString().slice(0, 10);
   if (typeof value._seconds === "number") return new Date(value._seconds * 1000).toISOString().slice(0, 10);
   if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}/.test(value)) return value.slice(0, 10);
   return null;
+}
+
+function archiveTaskActivityDateKey(task) {
+  return toDateKey(task.completedAt || task.dueDate || task.due);
 }
 
 function buildArchiveTaskActivity(tasks, days = 371) {
@@ -2591,7 +2594,7 @@ function ArchivePage({ tasks }) {
     if (!filtered.length) { window.Planary.toast({ type: "warn", title: "내보낼 항목이 없어요" }); return; }
     const escape = (v) => `"${String(v || "").replace(/"/g, '""')}"`;
     const header = ["제목", "완료일", "우선순위", "프로젝트", "메모"].map(escape).join(",");
-    const rows = filtered.map(t => [t.title, t.completedAt ? t.completedAt.slice(0, 10) : "", t.priority || "", t.project || "", t.memo || ""].map(escape).join(","));
+    const rows = filtered.map(t => [t.title, toDateKey(t.completedAt) || "", t.priority || "", t.project || "", t.memo || ""].map(escape).join(","));
     const csv = [header, ...rows].join("\n");
     const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
