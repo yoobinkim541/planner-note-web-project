@@ -1,4 +1,4 @@
-const CACHE_NAME = 'todo-pwa-cache-v163';
+const CACHE_NAME = 'todo-pwa-cache-v164';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -104,7 +104,7 @@ self.addEventListener('fetch', event => {
 
   if (
     requestUrl.origin === self.location.origin &&
-    ['.js', '.css', '.html'].some(ext => requestUrl.pathname.endsWith(ext))
+    ['.js', '.jsx', '.css', '.html'].some(ext => requestUrl.pathname.endsWith(ext))
   ) {
     event.respondWith(
       fetch(event.request)

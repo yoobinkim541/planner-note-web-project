@@ -228,9 +228,9 @@ function App() {
 
   const renderPage = () => {
     switch (page) {
-      case "home":      return <HomePage tasks={visibleTasks} setTasks={setTasks} variant={t.variant} setPage={setPage} setTaskFilter={setTaskFilter} interests={t.interests || []} widgetVisibility={t.widgetVisibility || null} />;
+      case "home":      return <HomePage tasks={visibleTasks} variant={t.variant} setPage={setPage} setTaskFilter={setTaskFilter} interests={t.interests || []} widgetVisibility={t.widgetVisibility || null} />;
       case "tasks":     return <TasksPage tasks={visibleTasks} setTasks={setTasks} taskFilter={taskFilter} setTaskFilter={setTaskFilter} variant={t.variant} appleCalendarEnabled={appleCalendarEnabled} />;
-      case "projects":  return <ProjectsPage tasks={visibleTasks} setTasks={setTasks} setPage={setPage} setTaskFilter={setTaskFilter} />;
+      case "projects":  return <ProjectsPage tasks={visibleTasks} setPage={setPage} setTaskFilter={setTaskFilter} />;
       case "notes":     return <NotesPage />;
       case "wiki":      return <WikiPage />;
       case "bookmarks": return <BookmarksPage />;

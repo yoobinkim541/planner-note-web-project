@@ -72,7 +72,7 @@ function buildTaskActivity(tasks, days = 140) {
    variant = "conservative" | "balanced" | "bold"
    =========================================================== */
 
-function HomePage({ tasks, setTasks, variant, setPage, setTaskFilter, interests, widgetVisibility }) {
+function HomePage({ tasks, variant, setPage, setTaskFilter, interests, widgetVisibility }) {
   const { PROJECTS, USER } = window.Planary;
 
   const today = tasks.filter(t => t.time && t.time.startsWith("오늘"));
@@ -83,7 +83,7 @@ function HomePage({ tasks, setTasks, variant, setPage, setTaskFilter, interests,
   const eclassSoon  = tasks.filter(t => t.project === "pe" && !t.done && (t.time === "내일" || (t.time && t.time.startsWith("오늘")) || t.time === "수요일 23:59"));
 
   const toggleTask = (id) =>
-    setTasks(prev => prev.map(t => t.id === id ? { ...t, done: !t.done, completedAt: !t.done ? new Date().toISOString() : null } : t));
+    window.dispatchEvent(new CustomEvent("planary:toggle-task", { detail: id }));
 
   const hour = new Date().getHours();
   const greet = hour < 12 ? "좋은 아침이에요" : hour < 18 ? "좋은 오후예요" : "수고하셨어요";
@@ -1185,7 +1185,7 @@ function TasksPage({ tasks, setTasks, taskFilter, setTaskFilter, variant, appleC
     completed: tasks.filter(t => t.done).length,
   }), [tasks, todayISO]);
 
-  const toggleTask = (id) => setTasks(prev => prev.map(t => t.id === id ? { ...t, done: !t.done, completedAt: !t.done ? new Date().toISOString() : null } : t));
+  const toggleTask = (id) => window.dispatchEvent(new CustomEvent("planary:toggle-task", { detail: id }));
   const addTask = () => {
     if (!composerText.trim()) return;
     const id = "t" + Date.now();
@@ -1206,7 +1206,6 @@ function TasksPage({ tasks, setTasks, taskFilter, setTaskFilter, variant, appleC
       done: false,
       tags: [],
     };
-    setTasks(prev => [newTask, ...prev]);
     window.dispatchEvent(new CustomEvent("planary:create-task", { detail: newTask }));
     window.Planary.toast?.({
       type: "ok",
