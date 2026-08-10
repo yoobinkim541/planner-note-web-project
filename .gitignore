@@ -4,3 +4,5 @@ node_modules/
 .env
 logs/
 worker/serviceAccount.json
+claude.md
+AGENTS.md
